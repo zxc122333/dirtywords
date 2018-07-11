@@ -1,10 +1,5 @@
 package dirtywords
 
-import (
-	"encoding/json"
-	"io/ioutil"
-)
-
 type TrieTree struct {
 	Root *trieNode `json:"root"`
 }
