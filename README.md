@@ -14,11 +14,13 @@ import (
 )
 
 func main() {
-	tree := dirtywords.BuildTree([][]rune{
+	badWords := [][]rune{
 		[]rune("脏词1"),
 		[]rune("脏词2"),
 		[]rune("bad words"),
-	}, []rune{' ', '.', '-', '*', '#', '@', ',', '/', '=', '_'})
+	}
+	skipLetters := []rune{' ', '.', '-', '*', '#', '@', ',', '/', '=', '_'}
+	tree := dirtywords.BuildTree(badWords, skipLetters)
 	tests := []string{
 		"这句话是正常的",
 		"这句话包含了脏词1",
