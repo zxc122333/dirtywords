@@ -2,6 +2,7 @@ package dirtywords
 
 type TrieTree struct {
 	Root *trieNode `json:"root"`
+	Skip []rune    `json:"skip"`
 }
 
 type trieNode struct {
@@ -9,15 +10,19 @@ type trieNode struct {
 	Done     bool               `json:"done"`
 }
 
-func BuildTree(words [][]rune) (tree *TrieTree) {
+func BuildTree(words [][]rune, skip []rune) (tree *TrieTree) {
+	if skip == nil {
+		skip = []rune{}
+	}
 	tree = &TrieTree{
 		Root: &trieNode{
 			Children: make(map[rune]*trieNode),
 		},
+		Skip: skip,
 	}
 
 	for _, word := range words {
-		tree.Root.insertWord(word)
+		tree.Root.insertWord(word, tree.Skip)
 	}
 	return
 }
@@ -76,10 +81,10 @@ func (tree *TrieTree) Check(targetStr string) bool {
 	return false
 }
 
-func (node *trieNode) insertWord(word []rune) {
+func (node *trieNode) insertWord(word []rune, skip []rune) {
 	cur := node
 	for _, char := range word {
-		cur = cur.findOrCreate(char)
+		cur = cur.findOrCreate(char, skip)
 	}
 	cur.Done = true
 }
@@ -89,9 +94,7 @@ func (node *trieNode) find(char rune) (child *trieNode) {
 	return
 }
 
-var skips = []rune{' ', '.', '-', '*', '#', '@', ',', '/', '=', '_'}
-
-func (node *trieNode) findOrCreate(char rune) (child *trieNode) {
+func (node *trieNode) findOrCreate(char rune, skips []rune) (child *trieNode) {
 	child, found := node.Children[char]
 	if !found {
 		child = &trieNode{
